@@ -1,0 +1,31 @@
+@page "/projects"
+@inject ProjectService ProjectSvc
+
+<h1>My Projects</h1>
+<hr />
+
+<div class="project-gallery">
+    @foreach (var project in ProjectSvc.GetProjects())
+    {
+        <div class="project-card">
+            <img src="@project.ImageUrl" alt="@project.Title" style="width:100%;" />
+            <h3>@project.Title</h3>
+            <p>@project.Summary</p>
+            <NavLink href="@($"project/{project.Id}")">View Details</NavLink>
+        </div>
+    }
+  </div>
+
+<style>
+    .project-gallery {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 1.5rem;
+    }
+    .project-card {
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 1rem;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+</style>

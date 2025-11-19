@@ -1,0 +1,49 @@
+@page "/guides"
+@page "/guides/{FileName}"
+@inject HttpClient Http
+
+<h1>My Learning Guides</h1>
+
+@if (string.IsNullOrEmpty(FileName))
+{
+    <p>Welcome to my guides! Select one to read:</p>
+    <ul>
+        <li><NavLink href="guides/my-cheatsheet">Git Cheatsheet</NavLink></li>
+    </ul>
+}
+else
+{
+    @if (string.IsNullOrEmpty(htmlContent))
+    {
+        <p><em>Loading guide...</em></p>
+    }
+    else
+    {
+        <div class="markdown-body">
+            @((MarkupString)htmlContent)
+        </div>
+    }
+}
+
+@code {
+    [Parameter]
+    public string? FileName { get; set; }
+
+    private string htmlContent = string.Empty;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (!string.IsNullOrEmpty(FileName))
+        {
+            try
+            {
+                var markdownContent = await Http.GetStringAsync($"guides/{FileName}.md");
+                htmlContent = Markdig.Markdown.ToHtml(markdownContent);
+            }
+            catch (Exception ex)
+            {
+                htmlContent = $"<p>Error loading guide: {ex.Message}</p>";
+            }
+        }
+    }
+}

@@ -1,0 +1,1 @@
+Place your images here, e.g., my-photo.jpg, project1.png, project2.png.

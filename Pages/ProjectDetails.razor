@@ -1,0 +1,44 @@
+@page "/project/{ProjectId}"
+@inject ProjectService ProjectSvc
+
+@if (project == null)
+{
+    <p>Project not found.</p>
+}
+else
+{
+    <h1>@project.Title</h1>
+    <img src="@project.ImageUrl" alt="@project.Title" style="width:100%; max-width: 600px;" />
+
+    <h2>Summary</h2>
+    <p>@project.Summary</p>
+
+    <h2>Technologies Used</h2>
+    <ul>
+        @foreach (var tech in project.Technologies)
+        {
+            <li>@tech</li>
+        }
+    </ul>
+
+    <h2>Challenges & Solutions</h2>
+    <p>@project.Challenge</p>
+
+    <p>
+        <a href="@project.LiveUrl" target="_blank">View Live Site</a>
+        <span> | </span>
+        <a href="@project.RepoUrl" target="_blank">View Source Code</a>
+    </p>
+}
+
+@code {
+    [Parameter]
+    public string ProjectId { get; set; }
+
+    private Project? project;
+
+    protected override void OnInitialized()
+    {
+        project = ProjectSvc.GetProjectById(ProjectId);
+    }
+}

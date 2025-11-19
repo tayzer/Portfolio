@@ -1,0 +1,40 @@
+name: Deploy Blazor WASM to GitHub Pages
+
+on:
+  push:
+    branches: [ "main" ]
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Build and Publish
+        run: dotnet publish MyPortfolio.csproj -c Release -o release --nologo /p:StaticWebAssetBasePath=/${{ github.event.repository.name }}
+
+      - name: Set base href for GitHub Pages
+        run: sed -i 's#<base href="/" />#<base href="/${{ github.event.repository.name }}/" />#' release/wwwroot/index.html
+
+      - name: Add .nojekyll and 404.html
+        run: |
+          touch release/wwwroot/.nojekyll
+          cp release/wwwroot/index.html release/wwwroot/404.html
+
+      - name: Deploy to GitHub Pages
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          branch: gh-pages
+          folder: release/wwwroot
