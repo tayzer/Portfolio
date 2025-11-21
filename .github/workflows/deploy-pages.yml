@@ -35,7 +35,7 @@ jobs:
           if [ -n "${{ secrets.CUSTOM_DOMAIN }}" ]; then echo "${{ secrets.CUSTOM_DOMAIN }}" > artifact/CNAME; fi
 
       - name: Upload artifact for GitHub Pages
-        uses: actions/upload-pages-artifact@v2
+        uses: actions/upload-pages-artifact@v4
         with:
           path: artifact
 
@@ -47,4 +47,4 @@ jobs:
       id-token: write
     steps:
       - name: Deploy to GitHub Pages
-        uses: actions/deploy-pages@v1
+        uses: actions/deploy-pages@v4
