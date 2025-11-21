@@ -1,0 +1,50 @@
+name: Deploy Blazor to GitHub Pages
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build_and_publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restore & Publish
+        run: |
+          dotnet restore
+          dotnet publish -c Release -o publish
+
+      - name: Prepare Pages artifact
+        run: |
+          mkdir -p artifact
+          cp -a publish/wwwroot/. artifact/
+          # Prevent GitHub Pages (Jekyll) from ignoring files that start with an underscore
+          echo "" > artifact/.nojekyll
+          if [ -n "${{ secrets.CUSTOM_DOMAIN }}" ]; then echo "${{ secrets.CUSTOM_DOMAIN }}" > artifact/CNAME; fi
+
+      - name: Upload artifact for GitHub Pages
+        uses: actions/upload-pages-artifact@v1
+        with:
+          path: artifact
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build_and_publish
+    permissions:
+      pages: write
+      id-token: write
+    steps:
+      - name: Deploy to GitHub Pages
+        uses: actions/deploy-pages@v1
