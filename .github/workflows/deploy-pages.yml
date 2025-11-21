@@ -23,8 +23,10 @@ jobs:
 
       - name: Restore & Publish
         run: |
-          dotnet restore
-          dotnet publish -c Release -o publish
+          # Restore the solution to ensure all projects and packages resolve
+          dotnet restore "Portfolio.sln"
+          # Publish the web project - specify the project file because the repo contains multiple projects
+          dotnet publish "MyPortfolio.csproj" -c Release -o publish
 
       - name: Prepare Pages artifact
         run: |
