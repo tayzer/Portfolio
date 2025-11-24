@@ -1,0 +1,84 @@
+{
+  "categories": [
+    {
+      "category": "Languages",
+      "items": [
+        {
+          "name": "C#",
+          "level": 95
+        },
+        {
+          "name": "SQL",
+          "level": 64
+        },
+        {
+          "name": "JavaScript / TypeScript",
+          "level": 58
+        },
+        {
+          "name": "Kotlin",
+          "level": 62
+        },
+        {
+          "name": "C++",
+          "level": 42
+        }
+      ]
+    },
+    {
+      "category": "Frameworks & Runtimes",
+      "items": [
+        {
+          "name": ".NET 8/10",
+          "level": 92
+        },
+        {
+          "name": "Blazor",
+          "level": 90
+        },
+        {
+          "name": "Entity Framework Core",
+          "level": 85
+        },
+        {
+          "name": "React",
+          "level": 61
+        }
+      ]
+    },
+    {
+      "category": "Databases",
+      "items": [
+        {
+          "name": "SQL Server",
+          "level": 88
+        },
+        {
+          "name": "Azure Cosmos DB",
+          "level": 65
+        }
+      ]
+    },
+    {
+      "category": "Tools & Platforms",
+      "items": [
+        {
+          "name": "Git & GitHub",
+          "level": 90
+        },
+        {
+          "name": "Azure",
+          "level": 78
+        },
+        {
+          "name": "Docker",
+          "level": 75
+        },
+        {
+          "name": "AWS",
+          "level": 58
+        }
+      ]
+    }
+  ]
+}

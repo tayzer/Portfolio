@@ -1,45 +1,87 @@
 @page "/skills"
 
+@inject HttpClient Http
+
+<!--
+  Skills page now loads proficiencies from `wwwroot/data/skills.json`.
+  To change values without recompiling, edit `wwwroot/data/skills.json`.
+  If the file cannot be loaded the page falls back to internal defaults.
+-->
+
 <h1>My Technical Skills</h1>
 <hr />
 
-<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem; margin-top: 2rem;">
-    <div class="skill-card" style="background: rgba(30, 41, 59, 0.8); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); padding: 2rem; border-radius: 1rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2); border: 1px solid rgba(148, 163, 184, 0.2);">
-        <h3>Languages</h3>
-        <ul>
-            <li>C#</li>
-            <li>SQL</li>
-            <li>JavaScript / TypeScript</li>
-            <li>HTML5 / CSS3</li>
-        </ul>
-    </div>
-
-    <div class="skill-card" style="background: rgba(30, 41, 59, 0.8); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); padding: 2rem; border-radius: 1rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2); border: 1px solid rgba(148, 163, 184, 0.2);">
-        <h3>Frameworks & Runtimes</h3>
-        <ul>
-            <li>.NET 8 / ASP.NET Core</li>
-            <li>Blazor</li>
-            <li>Entity Framework Core</li>
-            <li>React</li>
-        </ul>
-    </div>
-
-    <div class="skill-card" style="background: rgba(30, 41, 59, 0.8); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); padding: 2rem; border-radius: 1rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2); border: 1px solid rgba(148, 163, 184, 0.2);">
-        <h3>Databases</h3>
-        <ul>
-            <li>SQL Server</li>
-            <li>PostgreSQL</li>
-            <li>Azure Cosmos DB</li>
-        </ul>
-    </div>
-
-    <div class="skill-card" style="background: rgba(30, 41, 59, 0.8); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); padding: 2rem; border-radius: 1rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2); border: 1px solid rgba(148, 163, 184, 0.2);">
-        <h3>Tools & Platforms</h3>
-        <ul>
-            <li>Git & GitHub</li>
-            <li>Azure</li>
-            <li>Docker</li>
-            <li>xUnit</li>
-        </ul>
-    </div>
+<div class="skill-grid">
+    @if (categories == null)
+    {
+        <div class="card">Loading skills...</div>
+    }
+    else
+    {
+        @foreach (var cat in categories)
+        {
+            <div class="skill-card card">
+                <h3>@cat.Category</h3>
+                <div>
+                    @foreach (var item in cat.Items)
+                    {
+                        <div class="skill-row" title="@item.Name - @item.Level%">
+                            <div class="skill-name">@item.Name</div>
+                            <div class="skill-meter" aria-hidden="true">
+                                <div class="skill-fill" style="width:@item.Level%"></div>
+                            </div>
+                            <span class="sr-only">@item.Level% proficiency</span>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+    }
 </div>
+
+@code {
+    private class SkillItem { public string Name { get; set; } = ""; public int Level { get; set; } }
+    private class SkillCategory { public string Category { get; set; } = ""; public List<SkillItem> Items { get; set; } = new(); }
+
+    private List<SkillCategory>? categories;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Attempt to load skills from wwwroot/data/skills.json so you can edit values without recompiling.
+        try
+        {
+            var json = await Http.GetStringAsync("data/skills.json");
+            using var doc = System.Text.Json.JsonDocument.Parse(json);
+            var root = doc.RootElement;
+            if (root.TryGetProperty("categories", out var cats))
+            {
+                categories = new List<SkillCategory>();
+                foreach (var c in cats.EnumerateArray())
+                {
+                    var cat = new SkillCategory { Category = c.GetProperty("category").GetString() ?? "" };
+                    if (c.TryGetProperty("items", out var items))
+                    {
+                        foreach (var it in items.EnumerateArray())
+                        {
+                            var name = it.GetProperty("name").GetString() ?? "";
+                            var level = it.GetProperty("level").GetInt32();
+                            cat.Items.Add(new SkillItem { Name = name, Level = level });
+                        }
+                    }
+                    categories.Add(cat);
+                }
+            }
+        }
+        catch
+        {
+            // Fallback defaults if file isn't found or parsing fails.
+            categories = new List<SkillCategory>
+            {
+                new SkillCategory { Category = "Languages", Items = new List<SkillItem>{ new SkillItem{ Name = "C#", Level = 95 }, new SkillItem{ Name = "SQL", Level = 85 }, new SkillItem{ Name = "JavaScript / TypeScript", Level = 75 }, new SkillItem{ Name = "HTML5 / CSS3", Level = 78 } } },
+                new SkillCategory { Category = "Frameworks & Runtimes", Items = new List<SkillItem>{ new SkillItem{ Name = ".NET 8 / ASP.NET Core", Level = 92 }, new SkillItem{ Name = "Blazor", Level = 90 }, new SkillItem{ Name = "Entity Framework Core", Level = 85 }, new SkillItem{ Name = "React", Level = 70 } } },
+                new SkillCategory { Category = "Databases", Items = new List<SkillItem>{ new SkillItem{ Name = "SQL Server", Level = 88 }, new SkillItem{ Name = "PostgreSQL", Level = 80 }, new SkillItem{ Name = "Azure Cosmos DB", Level = 65 } } },
+                new SkillCategory { Category = "Tools & Platforms", Items = new List<SkillItem>{ new SkillItem{ Name = "Git & GitHub", Level = 90 }, new SkillItem{ Name = "Azure", Level = 78 }, new SkillItem{ Name = "Docker", Level = 75 }, new SkillItem{ Name = "xUnit", Level = 70 } } }
+            };
+        }
+    }
+}

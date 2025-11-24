@@ -243,3 +243,72 @@ hr {
     .nav-menu { flex-direction: column; gap: 1rem; }
     .nav-links { gap: 1rem; flex-wrap: wrap; justify-content: center; }
 }
+
+/* Skill meter styles */
+.skill-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.skill-card {
+    background: rgba(30, 41, 59, 0.8);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    padding: 1.5rem;
+    border-radius: 1rem;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.3), 0 2px 4px -1px rgba(0,0,0,0.2);
+    border: 1px solid var(--border-color);
+}
+
+.skill-row {
+    display: grid;
+    grid-template-columns: 1fr 120px 50px;
+    gap: 1rem;
+    align-items: center;
+    margin: 0.6rem 0;
+}
+
+.skill-name {
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
+.skill-meter {
+    height: 10px;
+    background: linear-gradient(90deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
+    border-radius: 999px;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.03);
+}
+
+.skill-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary), var(--primary-light));
+    box-shadow: 0 4px 12px rgba(114,47,55,0.25) inset;
+    transition: width 0.6s cubic-bezier(.2,.9,.2,1);
+}
+
+.skill-percent {
+    text-align: right;
+    font-weight: 600;
+    color: var(--text-muted);
+}
+
+@media (max-width: 720px) {
+    .skill-row { grid-template-columns: 1fr 90px 40px; }
+}
+
+/* Screen-reader only helper */
+.sr-only {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0) !important;
+    white-space: nowrap !important;
+    border: 0 !important;
+}
