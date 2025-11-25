@@ -1,49 +1,304 @@
 @page "/guides"
-@page "/guides/{FileName}"
+@page "/guides/{*FilePath}"
 @inject HttpClient Http
+@inject MyPortfolio.Services.GitHubKnowledgeBaseService KnowledgeBaseService
 
-<h1>My Learning Guides</h1>
+<div class="guides-container">
+    <div class="guides-header">
+        <h1>📚 Knowledge Base</h1>
+        <p class="guides-subtitle">A collection of software development notes and references</p>
+    </div>
 
-@if (string.IsNullOrEmpty(FileName))
-{
-    <p>Welcome to my guides! Select one to read:</p>
-    <ul>
-        <li><NavLink href="guides/my-cheatsheet">Git Cheatsheet</NavLink></li>
-    </ul>
-}
-else
-{
-    @if (string.IsNullOrEmpty(htmlContent))
+    @if (!string.IsNullOrEmpty(FilePath) && !isViewingFolder)
     {
-        <p><em>Loading guide...</em></p>
+        <!-- Viewing a specific markdown file -->
+        <div class="breadcrumb">
+            <NavLink href="guides" class="breadcrumb-link">📁 Root</NavLink>
+            @foreach (var segment in GetBreadcrumbSegments())
+            {
+                <span class="breadcrumb-separator">/</span>
+                @if (segment.IsLast)
+                {
+                    <span class="breadcrumb-current">📄 @segment.DisplayName</span>
+                }
+                else
+                {
+                    <NavLink href="@segment.Url" class="breadcrumb-link">📁 @segment.DisplayName</NavLink>
+                }
+            }
+        </div>
+
+        @if (isLoading)
+        {
+            <div class="loading-container">
+                <div class="loading-spinner"></div>
+                <p>Loading content...</p>
+            </div>
+        }
+        else if (!string.IsNullOrEmpty(errorMessage))
+        {
+            <div class="error-message">
+                <p>⚠️ @errorMessage</p>
+                <button class="btn-retry" @onclick="LoadContent">Try Again</button>
+            </div>
+        }
+        else
+        {
+            <div class="markdown-body">
+                @((MarkupString)htmlContent)
+            </div>
+            
+            <div class="guide-footer">
+                <a href="@GetGitHubFileUrl()" target="_blank" rel="noopener noreferrer" class="github-link">
+                    📝 View on GitHub
+                </a>
+            </div>
+        }
     }
     else
     {
-        <div class="markdown-body">
-            @((MarkupString)htmlContent)
+        <!-- Viewing folder contents (root or subfolder) -->
+        @if (!string.IsNullOrEmpty(FilePath))
+        {
+            <div class="breadcrumb">
+                <NavLink href="guides" class="breadcrumb-link">📁 Root</NavLink>
+                @foreach (var segment in GetBreadcrumbSegments())
+                {
+                    <span class="breadcrumb-separator">/</span>
+                    @if (segment.IsLast)
+                    {
+                        <span class="breadcrumb-current">📁 @segment.DisplayName</span>
+                    }
+                    else
+                    {
+                        <NavLink href="@segment.Url" class="breadcrumb-link">📁 @segment.DisplayName</NavLink>
+                    }
+                }
+            </div>
+        }
+
+        @if (isLoading)
+        {
+            <div class="loading-container">
+                <div class="loading-spinner"></div>
+                <p>Loading contents...</p>
+            </div>
+        }
+        else if (!string.IsNullOrEmpty(errorMessage))
+        {
+            <div class="error-message">
+                <p>⚠️ @errorMessage</p>
+                <button class="btn-retry" @onclick="LoadContent">Try Again</button>
+            </div>
+        }
+        else if (contents.Count == 0)
+        {
+            <p class="empty-folder">This folder is empty.</p>
+        }
+        else
+        {
+            <div class="contents-grid">
+                @foreach (var item in contents)
+                {
+                    var cardClass = item.IsDirectory ? "content-card folder-card" : "content-card file-card";
+                    <NavLink href="@GetItemUrl(item)" class="@cardClass">
+                        <div class="card-icon">
+                            @if (item.IsDirectory)
+                            {
+                                <span class="icon-folder">📁</span>
+                            }
+                            else
+                            {
+                                <span class="icon-file">📄</span>
+                            }
+                        </div>
+                        <div class="card-info">
+                            <h3>@item.DisplayName</h3>
+                            @if (!item.IsDirectory && item.Size > 0)
+                            {
+                                <span class="file-size">@FormatFileSize(item.Size)</span>
+                            }
+                        </div>
+                    </NavLink>
+                }
+            </div>
+        }
+        
+        <div class="guides-footer">
+            <a href="https://github.com/tayzer/KnowledgeBase.Dev" target="_blank" rel="noopener noreferrer" class="github-repo-link">
+                🔗 View Repository on GitHub
+            </a>
         </div>
     }
-}
+</div>
 
 @code {
     [Parameter]
-    public string? FileName { get; set; }
+    public string? FilePath { get; set; }
 
     private string htmlContent = string.Empty;
+    private string errorMessage = string.Empty;
+    private bool isLoading = true;
+    private bool isViewingFolder = true;
+    private List<MyPortfolio.Services.GitHubContentItem> contents = new();
+    
+    // Track navigation to prevent stale async operations from updating state
+    private int _navigationId = 0;
 
     protected override async Task OnParametersSetAsync()
     {
-        if (!string.IsNullOrEmpty(FileName))
+        // Always load on first render, then only if path changes
+        await LoadContent();
+    }
+
+    private async Task LoadContent()
+    {
+        // Increment navigation ID to invalidate any in-flight requests
+        var currentNavigationId = ++_navigationId;
+        var currentPath = FilePath;
+        
+        isLoading = true;
+        errorMessage = string.Empty;
+        htmlContent = string.Empty;
+        contents = new List<MyPortfolio.Services.GitHubContentItem>();
+        StateHasChanged();
+
+        try
         {
-            try
+            if (string.IsNullOrEmpty(currentPath))
             {
-                var markdownContent = await Http.GetStringAsync($"guides/{FileName}.md");
+                // Root folder - show all contents
+                var result = await KnowledgeBaseService.GetContentsAsync();
+                
+                // Check if this navigation is still current
+                if (currentNavigationId != _navigationId) return;
+                
+                isViewingFolder = true;
+                contents = result;
+            }
+            else if (currentPath.EndsWith(".md", StringComparison.OrdinalIgnoreCase))
+            {
+                // It's explicitly a markdown file
+                var markdownContent = await KnowledgeBaseService.GetFileContentAsync(currentPath);
+                
+                // Check if this navigation is still current
+                if (currentNavigationId != _navigationId) return;
+                
+                isViewingFolder = false;
                 htmlContent = Markdig.Markdown.ToHtml(markdownContent);
             }
-            catch (Exception ex)
+            else
             {
-                htmlContent = $"<p>Error loading guide: {ex.Message}</p>";
+                // Could be a folder or a file without extension
+                // First try to get it as a folder
+                var folderContents = await KnowledgeBaseService.GetContentsAsync(currentPath);
+                
+                // Check if this navigation is still current
+                if (currentNavigationId != _navigationId) return;
+                
+                if (folderContents.Count > 0)
+                {
+                    // It's a folder
+                    isViewingFolder = true;
+                    contents = folderContents;
+                }
+                else
+                {
+                    // Try as a markdown file (user might have navigated without .md extension)
+                    var pathWithMd = currentPath + ".md";
+                    var markdownContent = await KnowledgeBaseService.GetFileContentAsync(pathWithMd);
+                    
+                    // Check if this navigation is still current
+                    if (currentNavigationId != _navigationId) return;
+                    
+                    if (!markdownContent.StartsWith("Error loading file:"))
+                    {
+                        isViewingFolder = false;
+                        htmlContent = Markdig.Markdown.ToHtml(markdownContent);
+                    }
+                    else
+                    {
+                        // Neither folder nor file found
+                        errorMessage = $"Could not find '{currentPath}' in the knowledge base.";
+                    }
+                }
             }
         }
+        catch (Exception ex)
+        {
+            // Check if this navigation is still current before showing error
+            if (currentNavigationId != _navigationId) return;
+            
+            errorMessage = $"Failed to load content: {ex.Message}";
+        }
+        finally
+        {
+            // Only update loading state if this is still the current navigation
+            if (currentNavigationId == _navigationId)
+            {
+                isLoading = false;
+                StateHasChanged();
+            }
+        }
+    }
+
+    private string GetItemUrl(MyPortfolio.Services.GitHubContentItem item)
+    {
+        // For markdown files, we can optionally strip the .md extension for cleaner URLs
+        return $"guides/{item.Path}";
+    }
+
+    private string GetGitHubFileUrl()
+    {
+        var path = FilePath ?? "";
+        if (!path.EndsWith(".md"))
+        {
+            path += ".md";
+        }
+        return $"https://github.com/tayzer/KnowledgeBase.Dev/blob/main/{path}";
+    }
+
+    private List<BreadcrumbSegment> GetBreadcrumbSegments()
+    {
+        var segments = new List<BreadcrumbSegment>();
+        if (string.IsNullOrEmpty(FilePath)) return segments;
+
+        var parts = FilePath.Split('/');
+        var pathSoFar = "";
+
+        for (int i = 0; i < parts.Length; i++)
+        {
+            var part = parts[i];
+            pathSoFar = string.IsNullOrEmpty(pathSoFar) ? part : $"{pathSoFar}/{part}";
+            
+            var displayName = part;
+            if (displayName.EndsWith(".md", StringComparison.OrdinalIgnoreCase))
+            {
+                displayName = displayName[..^3];
+            }
+
+            segments.Add(new BreadcrumbSegment
+            {
+                DisplayName = displayName,
+                Url = $"guides/{pathSoFar}",
+                IsLast = i == parts.Length - 1
+            });
+        }
+
+        return segments;
+    }
+
+    private string FormatFileSize(long bytes)
+    {
+        if (bytes < 1024) return $"{bytes} B";
+        if (bytes < 1024 * 1024) return $"{bytes / 1024.0:F1} KB";
+        return $"{bytes / (1024.0 * 1024.0):F1} MB";
+    }
+
+    private class BreadcrumbSegment
+    {
+        public string DisplayName { get; set; } = "";
+        public string Url { get; set; } = "";
+        public bool IsLast { get; set; }
     }
 }

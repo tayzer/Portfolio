@@ -1,39 +1,51 @@
 ---
 applyTo: '**'
-lastUpdated: 2025-11-24T12:00:00Z
-sessionStatus: active
+lastUpdated: 2025-11-25T11:00:00Z
+sessionStatus: complete
 ---
 
 # Current Session Context
 
 ## Active Task
-Fix GitHub Pages deployment issues (resource 404s and SRI failure).
+Implement dynamic Guides page that pulls content from GitHub repo (KnowledgeBase.Dev).
 
 ## Todo List Status
-- [x] Step 1: Add Google Fonts to `wwwroot/index.html`
-- [x] Step 2: Update `wwwroot/css/app.css` with new color palette and styles
-- [x] Step 3: Update `Pages/Index.razor` structure for better styling
-- [x] Step 4: Update `Shared/NavMenu.razor` styling
-- [x] Step 5: Verify changes
-- [x] Step 6: Add skill proficiency meters to `Pages/Skills.razor` and CSS
-- [x] Step 7: Final verification and accessibility tweaks
-- [x] Step 8: Read session context (2025-11-22)
-- [x] Step 9: Patch `wwwroot/index.html` (set base href and update SRI) (2025-11-22)
-- [ ] Step 10: Verify resources load on GitHub Pages (or local preview)
-- [x] Step 11: If needed: remove or update SRI for external CDN or make assets relative (2025-11-24)
-- [ ] Step 12: Update session_context.md with final state and mark session complete
+- [x] Step 1: Fetch and analyze KnowledgeBase.Dev repo structure
+- [x] Step 2: Research GitHub API for fetching repo contents  
+- [x] Step 3: Create GitHubKnowledgeBaseService to fetch repo contents
+- [x] Step 4: Create data models for GitHub content items
+- [x] Step 5: Update Guides.razor to display folders/files dynamically
+- [x] Step 6: Add navigation for nested folders (breadcrumbs)
+- [x] Step 7: Add styling for the guides page
+- [x] Step 8: Test the implementation
+- [x] Step 9: Update session_context.md with final state
 
 ## Key Technical Decisions
-- Primary Color: #722f37 (Merlot)
-- Secondary Color: #D4AF37 (Gold) for accents
-- Background: Dark theme (#0f172a)
-- Fonts: Montserrat (Headings), Open Sans (Body)
+- Using GitHub REST API (api.github.com) to fetch repo contents dynamically
+- Using raw.githubusercontent.com for fetching raw markdown file contents  
+- Implemented client-side caching (10 minutes) to reduce API calls
+- GitHub API supports CORS for public repos - no server proxy needed
+- Catch-all route parameter `{*FilePath}` for nested folder/file navigation
 
 ## Recent File Changes
- - `wwwroot/index.html`: Set `<base href="/Portfolio/" />` for GitHub Pages, updated the `github-markdown-css` SRI to match the computed SHA-512 value reported by the browser console, then removed the `integrity` & `crossorigin` attributes to prevent brittle SRI mismatches when deployed on GitHub Pages (2025-11-24).
+- `Services/GitHubKnowledgeBaseService.cs`: New service to fetch GitHub repo contents and markdown files
+- `Program.cs`: Registered GitHubKnowledgeBaseService as a scoped service
+- `Pages/Guides.razor`: Complete rewrite to dynamically display folders/files from GitHub repo
+- `wwwroot/css/app.css`: Added comprehensive styling for guides page (breadcrumbs, content grid, markdown rendering)
+- `Shared/NavMenu.razor`: Updated nav link text from "Guides" to "Knowledge Base"
+
+## External Resources Referenced
+- GitHub REST API Contents endpoint: https://docs.github.com/en/rest/repos/contents
+- KnowledgeBase.Dev repo: https://github.com/tayzer/KnowledgeBase.Dev
 
 ## Next Session Priority
-- Verify the site on GitHub Pages (or locally via `dotnet publish` and a static server) to ensure all resources load correctly; if any SRI/404 issues remain, remove or update the SRI attribute as a fallback.
+No active tasks - feature complete. Consider testing on GitHub Pages after deployment.
 
 ## Session Notes
-Completed the styling overhaul earlier. On 2025-11-22 I investigated GitHub Pages deployment errors and patched `wwwroot/index.html` to set the repository base path and update the `github-markdown-css` integrity attribute.
+Successfully implemented dynamic GitHub Knowledge Base integration:
+- Fetches folder structure from tayzer/KnowledgeBase.Dev repo via GitHub API
+- Renders markdown files using Markdig
+- Supports nested folder navigation with breadcrumb trail
+- Shows folders first, then markdown files alphabetically
+- Includes "View on GitHub" links for source files
+- 10-minute client-side caching to respect API rate limits
