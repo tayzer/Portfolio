@@ -1,0 +1,14 @@
+{
+  "heroImageUrl": "images/Me.jpg",
+  "heroImageAlt": "Photo of Taylor",
+  "heroGreeting": "Hey, I'm",
+  "heroName": "Taylor",
+  "heroParagraphs": [
+    "I'm a passionate developer with over a decade of experience building clean web applications and reliable backend systems. I enjoy writing clean, readable code, that is both maintainable and efficient. I originally set out to become a game designer, but stumbled into software development by chance and it stuck. I'm not mad though as I really enjoy the process of building and maintaining software and there is always something new to learn or improve on. I'm always refining, refactoring and building upon prior experiences." 
+  ],
+  "ctaText": "View My Work",
+  "ctaHref": "projects",
+  "goalTitle": "My Goal",
+  "goalText": "Keep building things I’m proud of and helping people ship great software, while staying curious and always improving the craft."
+}
+

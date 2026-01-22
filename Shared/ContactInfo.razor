@@ -1,12 +1,56 @@
+@inject ProfileService ProfileSvc
+
 <div>
     <h3>Contact Me</h3>
     <p>Want to connect?</p>
-    <div>
-        <a href="https://github.com/tayzer" target="_blank" rel="noopener noreferrer">GitHub</a>
-        <a href="https://www.linkedin.com/in/taylor-wilcox-422798100" target="_blank" rel="noopener noreferrer">LinkedIn</a>
-        <a>Email Me: twilcox.dev@gmail.com</a>
-    </div>
-    <div style="margin-top: 1rem;">
-        <a href="docs/cv-tw-2.pdf" download="TaylorWilcox-CV.pdf" class="btn-primary" style="font-size: 0.9rem; padding: 0.5rem 1.5rem;">Download Resume</a>
-    </div>
+
+    @if (isLoading)
+    {
+        <p>Loading contact info...</p>
+    }
+    else if (!string.IsNullOrWhiteSpace(errorMessage))
+    {
+        <p>@errorMessage</p>
+    }
+    else if (profile == null)
+    {
+        <p>Contact details unavailable.</p>
+    }
+    else
+    {
+        <div>
+            <a href="@profile.GitHubUrl" target="_blank" rel="noopener noreferrer">GitHub</a>
+            <a href="@profile.LinkedInUrl" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+            <a href="@($"mailto:{profile.Email}")">Email Me: @profile.Email</a>
+        </div>
+        <div style="margin-top: 1rem;">
+            <a href="@profile.ResumeUrl" download="@profile.ResumeFileName" class="btn-primary" style="font-size: 0.9rem; padding: 0.5rem 1.5rem;">Download Resume</a>
+        </div>
+    }
 </div>
+
+@code {
+    private Profile? profile;
+    private bool isLoading = true;
+    private string? errorMessage;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            profile = await ProfileSvc.GetProfileAsync();
+            if (profile == null)
+            {
+                errorMessage = "Contact info is missing or invalid.";
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Failed to load contact info: {ex.Message}";
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+}

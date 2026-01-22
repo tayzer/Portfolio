@@ -1,35 +1,63 @@
 @page "/"
+@inject HomeContentService HomeContentSvc
 
-<div class="hero-section">
-    <img src="images/Me.jpg" alt="Photo of Taylor" />
-    
-    <h1>Hey, I'm <span class="highlight">Taylor</span></h1>
-    
-    <p>
-        I'm a <span class="highlight">developer</span> with over a decade of experience building 
-        <strong>clean web applications</strong> and <strong>reliable backend systems</strong>—and I still tinker 
-        with whatever sparks my curiosity.
-    </p>
-
-    <p>
-        I originally set out to become a game designer, but stumbled into software development by chance. 
-        It stuck. I like building things that feel good to use and are easy to maintain.
-    </p>
-
-    <p>
-        What drives me most is <span class="highlight">writing clean, readable code</span> and making good 
-        tradeoffs. I’m always refining, refactoring, and learning—because shipping better software is a 
-        long game.
-    </p>
-    
-    <div style="margin-top: 2rem;">
-        <a href="projects" class="btn-primary">View My Work</a>
+@if (isLoading)
+{
+    <p>Loading...</p>
+}
+else if (!string.IsNullOrWhiteSpace(errorMessage))
+{
+    <p>@errorMessage</p>
+}
+else if (content == null)
+{
+    <p>Home content unavailable.</p>
+}
+else
+{
+    <div class="hero-section">
+        <img src="@content.HeroImageUrl" alt="@content.HeroImageAlt" />
+        
+        <h1>@content.HeroGreeting <span class="highlight">@content.HeroName</span></h1>
+        
+        @foreach (var paragraph in content.HeroParagraphs)
+        {
+            <p>@((MarkupString)paragraph)</p>
+        }
+        
+        <div style="margin-top: 2rem;">
+            <a href="@content.CtaHref" class="btn-primary">@content.CtaText</a>
+        </div>
     </div>
-</div>
 
-<div class="card">
-    <h2>My Goal</h2>
-    <p>
-        Keep building things I’m proud of and helping people ship great software, while staying curious and always improving the craft.
-    </p>
-</div>
+    <div class="card">
+        <h2>@content.GoalTitle</h2>
+        <p>@content.GoalText</p>
+    </div>
+}
+
+@code {
+    private HomeContent? content;
+    private bool isLoading = true;
+    private string? errorMessage;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            content = await HomeContentSvc.GetHomeContentAsync();
+            if (content == null)
+            {
+                errorMessage = "Home content is missing or invalid.";
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Failed to load home content: {ex.Message}";
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+}

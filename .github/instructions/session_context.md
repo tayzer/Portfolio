@@ -7,28 +7,27 @@ sessionStatus: complete
 # Current Session Context
 
 ## Active Task
-Overhaul styling with dark/light themes and a professional polish.
+Move home page content into a JSON data source with validation.
 
 ## Todo List Status
-- [x] Step 1: Design updated theme tokens and styles
-- [x] Step 2: Add theme toggle and persistence
-- [x] Step 3: Apply UI polish across core components
+- [x] Step 1: Add home content data source
+- [x] Step 2: Add HomeContentService with validation
+- [x] Step 3: Update Index page to load content asynchronously
 - [x] Step 4: Update session context with final state
 
 ## Recent File Changes
-- `wwwroot/css/app.css`: Added theme tokens, light/dark overrides, and polish styles
-- `Shared/NavMenu.razor`: Added theme toggle button and layout container
-- `wwwroot/index.html`: Added theme initialization and persistence script
+- `wwwroot/data/home.json`: Added home page content data source
+- `Services/HomeContentService.cs`: Load/validate home content with caching
+- `Pages/Index.razor`: Render home content from data source with async states
+- `Program.cs`: Register HomeContentService as scoped
 
 ## Key Technical Decisions
 - Use Blazor performance and web accessibility guidelines as audit baselines
 - Evaluate content impact using STAR/XYZ framing
 
 ## External Resources Referenced
-- ASP.NET Core Blazor performance best practices: https://learn.microsoft.com/en-us/aspnet/core/blazor/performance/?view=aspnetcore-8.0
-- Blazor WebAssembly build tools and AOT compilation: https://learn.microsoft.com/en-us/aspnet/core/blazor/webassembly-build-tools-and-aot?view=aspnetcore-8.0
-- W3C Introduction to Web Accessibility: https://www.w3.org/WAI/fundamentals/accessibility-intro/
-- W3C Tips for Getting Started: https://www.w3.org/WAI/tips/
+- ASP.NET Core Blazor JSON helpers (GetFromJsonAsync): https://learn.microsoft.com/en-us/aspnet/core/blazor/call-web-api?view=aspnetcore-7.0&pivots=webassembly#httpclient-and-json-helpers
+- Syncfusion FAQ: Read JSON in Blazor WebAssembly: https://www.syncfusion.com/faq/blazor/web-api/how-do-i-read-a-json-file-in-blazor-webassembly
 
 ## Blockers & Issues
 - None.
@@ -43,4 +42,4 @@ Overhaul styling with dark/light themes and a professional polish.
 No active tasks.
 
 ## Session Notes
-Completed dark/light theme overhaul with a toggle and professional polish updates.
+Moved home page content to JSON and wired it through a validated data service.

@@ -1,46 +1,109 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http.Json;
 
 namespace MyPortfolio.Services;
 
 public class ProjectService
 {
-    private readonly List<Project> _projects = new()
-    {
-        new Project
-        {
-            Id = "project-1",
-            Title = "SyncIt",
-            Summary = "My ongoing Blazor side project: a Spotify-integrated queuing app I built end-to-end (useful for parties or running).",
-            ImageUrl = "images/BeatApp.jpg",
-            Technologies = new List<string> { "Blazor WASM", ".NET 8" },
-            Challenge = "With this being my first proper Blazor project, the main challenge was building familiarity with Blazor.",
-            LiveUrl = "https://syncityo.com"
-        },
-        new Project
-        {
-            Id = "project-2",
-            Title = "Smart Comparer",
-            Summary = "My ongoing open-source project: a .NET library for efficient A/B object comparisons across JSON/XML. I maintain it as a reusable library and keep tightening the diffing logic and developer ergonomics.",
-            ImageUrl = "images/Compare.jpg",
-            Technologies = new List<string> { "ASP.NET Core" },
-            Challenge = "Trying to do something new for A/B comparisons and making it efficient and intuitive... ",
-            RepoUrl = "https://github.com/tayzer/SmartObjectComparer.Net"
-        }
-    };
+    private const string ProjectsPath = "data/projects.json";
+    private static readonly TimeSpan CacheDuration = TimeSpan.FromMinutes(10);
 
-    public List<Project> GetProjects() => _projects;
-    public Project? GetProjectById(string id) => _projects.FirstOrDefault(p => p.Id == id);
+    private readonly HttpClient _httpClient;
+    private IReadOnlyList<Project>? _cachedProjects;
+    private DateTime _cachedAtUtc;
+
+    public ProjectService(HttpClient httpClient)
+    {
+        _httpClient = httpClient;
+    }
+
+    public async Task<IReadOnlyList<Project>> GetProjectsAsync()
+    {
+        if (_cachedProjects != null && DateTime.UtcNow - _cachedAtUtc < CacheDuration)
+        {
+            return _cachedProjects;
+        }
+
+        try
+        {
+            var data = await _httpClient.GetFromJsonAsync<ProjectData>(ProjectsPath);
+            var projects = data?.Projects ?? new List<Project>();
+
+            var validated = ValidateProjects(projects);
+            _cachedProjects = validated;
+            _cachedAtUtc = DateTime.UtcNow;
+            return validated;
+        }
+        catch
+        {
+            return Array.Empty<Project>();
+        }
+    }
+
+    public async Task<Project?> GetProjectByIdAsync(string? id)
+    {
+        if (string.IsNullOrWhiteSpace(id))
+        {
+            return null;
+        }
+
+        var projects = await GetProjectsAsync();
+        return projects.FirstOrDefault(p => p.Id.Equals(id, StringComparison.OrdinalIgnoreCase));
+    }
+
+    private static IReadOnlyList<Project> ValidateProjects(IEnumerable<Project> projects)
+    {
+        var results = new List<Project>();
+        var ids = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+        foreach (var project in projects)
+        {
+            if (!IsValid(project))
+            {
+                continue;
+            }
+
+            if (!ids.Add(project.Id))
+            {
+                continue;
+            }
+
+            project.Technologies = project.Technologies
+                .Where(tech => !string.IsNullOrWhiteSpace(tech))
+                .Select(tech => tech.Trim())
+                .ToList();
+
+            results.Add(project);
+        }
+
+        return results;
+    }
+
+    private static bool IsValid(Project project)
+    {
+        return !string.IsNullOrWhiteSpace(project.Id)
+            && !string.IsNullOrWhiteSpace(project.Title)
+            && !string.IsNullOrWhiteSpace(project.Summary)
+            && !string.IsNullOrWhiteSpace(project.ImageUrl)
+            && project.Technologies.Count > 0;
+    }
+}
+
+public sealed class ProjectData
+{
+    public List<Project> Projects { get; set; } = new();
 }
 
 public class Project
 {
-    public string Id { get; set; }
-    public string Title { get; set; }
-    public string Summary { get; set; }
-    public string ImageUrl { get; set; }
-    public List<string> Technologies { get; set; }
-    public string Challenge { get; set; }
-    public string LiveUrl { get; set; }
-    public string RepoUrl { get; set; }
+    public string Id { get; set; } = string.Empty;
+    public string Title { get; set; } = string.Empty;
+    public string Summary { get; set; } = string.Empty;
+    public string ImageUrl { get; set; } = string.Empty;
+    public List<string> Technologies { get; set; } = new();
+    public string? Challenge { get; set; }
+    public string? LiveUrl { get; set; }
+    public string? RepoUrl { get; set; }
 }

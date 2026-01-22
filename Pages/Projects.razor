@@ -4,17 +4,54 @@
 <h1>My Projects</h1>
 <hr />
 
-<div class="project-gallery">
-    @foreach (var project in ProjectSvc.GetProjects())
+@if (isLoading)
+{
+    <p>Loading projects...</p>
+}
+else if (!string.IsNullOrWhiteSpace(errorMessage))
+{
+    <p>@errorMessage</p>
+}
+else if (projects.Count == 0)
+{
+    <p>No projects available.</p>
+}
+else
+{
+    <div class="project-gallery">
+        @foreach (var project in projects)
+        {
+            <div class="project-card">
+                <img src="@project.ImageUrl" alt="@project.Title" loading="lazy" decoding="async" style="width:100%;" />
+                <h3>@project.Title</h3>
+                <p>@project.Summary</p>
+                <NavLink href="@($"project/{project.Id}")">View Details</NavLink>
+            </div>
+        }
+    </div>
+}
+
+@code {
+    private IReadOnlyList<Project> projects = Array.Empty<Project>();
+    private bool isLoading = true;
+    private string? errorMessage;
+
+    protected override async Task OnInitializedAsync()
     {
-        <div class="project-card">
-            <img src="@project.ImageUrl" alt="@project.Title" style="width:100%;" />
-            <h3>@project.Title</h3>
-            <p>@project.Summary</p>
-            <NavLink href="@($"project/{project.Id}")">View Details</NavLink>
-        </div>
+        try
+        {
+            projects = await ProjectSvc.GetProjectsAsync();
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Failed to load projects: {ex.Message}";
+        }
+        finally
+        {
+            isLoading = false;
+        }
     }
-  </div>
+}
 
 <style>
     .project-gallery {

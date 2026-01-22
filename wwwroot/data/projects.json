@@ -1,0 +1,22 @@
+{
+  "projects": [
+    {
+      "id": "project-1",
+      "title": "SyncIt",
+      "summary": "My ongoing Blazor side project: a Spotify-integrated queuing app I built end-to-end (useful for parties or running).",
+      "imageUrl": "images/BeatApp.jpg",
+      "technologies": ["Blazor WASM", ".NET 8"],
+      "challenge": "With this being my first proper Blazor project, the main challenge was building familiarity with Blazor.",
+      "liveUrl": "https://syncityo.com"
+    },
+    {
+      "id": "project-2",
+      "title": "Smart Comparer",
+      "summary": "My ongoing open-source project: a .NET library for efficient A/B object comparisons across JSON/XML. I maintain it as a reusable library and keep tightening the diffing logic and developer ergonomics.",
+      "imageUrl": "images/Compare.jpg",
+      "technologies": ["ASP.NET Core"],
+      "challenge": "Trying to do something new for A/B comparisons and making it efficient and intuitive...",
+      "repoUrl": "https://github.com/tayzer/SmartObjectComparer.Net"
+    }
+  ]
+}
