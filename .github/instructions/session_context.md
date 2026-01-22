@@ -1,22 +1,24 @@
 ---
 applyTo: '**'
-lastUpdated: 2026-01-21T00:00:00Z
+lastUpdated: 2026-01-22T00:00:00Z
 sessionStatus: complete
 ---
 
 # Current Session Context
 
 ## Active Task
-Audit portfolio site for senior-level technical, UI/UX, and content signals.
+Overhaul styling with dark/light themes and a professional polish.
 
 ## Todo List Status
-- [x] Step 1: Review core pages, services, and styles for senior patterns
-- [x] Step 2: Compare against performance and accessibility best practices
-- [x] Step 3: Draft brutal audit (weaknesses, refactors, content rewrites)
+- [x] Step 1: Design updated theme tokens and styles
+- [x] Step 2: Add theme toggle and persistence
+- [x] Step 3: Apply UI polish across core components
 - [x] Step 4: Update session context with final state
 
 ## Recent File Changes
-- None in this session.
+- `wwwroot/css/app.css`: Added theme tokens, light/dark overrides, and polish styles
+- `Shared/NavMenu.razor`: Added theme toggle button and layout container
+- `wwwroot/index.html`: Added theme initialization and persistence script
 
 ## Key Technical Decisions
 - Use Blazor performance and web accessibility guidelines as audit baselines
@@ -41,4 +43,4 @@ Audit portfolio site for senior-level technical, UI/UX, and content signals.
 No active tasks.
 
 ## Session Notes
-Completed senior-level audit of the portfolio's code, UI/UX, and content with targeted refactor and rewrite guidance.
+Completed dark/light theme overhaul with a toggle and professional polish updates.

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -17,6 +17,29 @@
         #blazor-error-ui.show { display: block; }
         #blazor-error-ui .reload, #blazor-error-ui .dismiss { color: #fff; margin-left: 0.75rem; cursor: pointer; text-decoration: underline; }
     </style>
+    <script>
+        (function () {
+            const storageKey = "theme";
+            const root = document.documentElement;
+            const applyTheme = (theme) => root.setAttribute("data-theme", theme);
+
+            const stored = localStorage.getItem(storageKey);
+            if (stored) {
+                applyTheme(stored);
+            } else if (window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches) {
+                applyTheme("light");
+            } else {
+                applyTheme("dark");
+            }
+
+            window.toggleTheme = function () {
+                const current = root.getAttribute("data-theme") || "dark";
+                const next = current === "dark" ? "light" : "dark";
+                applyTheme(next);
+                localStorage.setItem(storageKey, next);
+            };
+        })();
+    </script>
 </head>
 <body>
     <div id="app">Loading...</div>
