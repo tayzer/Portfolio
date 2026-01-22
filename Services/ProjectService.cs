@@ -10,18 +10,18 @@ public class ProjectService
         new Project
         {
             Id = "project-1",
-            Title = "BeatSwirl",
-            Summary = "A song queuing app leveraging music apis (e.g. Spotify) built with Blazor and .NET.",
+            Title = "SyncIt",
+            Summary = "My ongoing Blazor side project: a Spotify-integrated queuing app I built end-to-end (useful for parties or running).",
             ImageUrl = "images/BeatApp.jpg",
             Technologies = new List<string> { "Blazor WASM", ".NET 8" },
-            Challenge = "The challenge was getting used to Blazor, as it was my first Blazor site",
-            LiveUrl = "https://beat.bitswirl.co.uk"
+            Challenge = "With this being my first proper Blazor project, the main challenge was building familiarity with Blazor.",
+            LiveUrl = "https://syncityo.com"
         },
         new Project
         {
             Id = "project-2",
             Title = "Smart Comparer",
-            Summary = "A Blazor WASM site and .NET library for A/B comparisons supporting both JSON and XML.",
+            Summary = "My ongoing open-source project: a .NET library for efficient A/B object comparisons across JSON/XML. I maintain it as a reusable library and keep tightening the diffing logic and developer ergonomics.",
             ImageUrl = "images/Compare.jpg",
             Technologies = new List<string> { "ASP.NET Core" },
             Challenge = "Trying to do something new for A/B comparisons and making it efficient and intuitive... ",
