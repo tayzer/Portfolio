@@ -59,7 +59,7 @@ public class GitHubKnowledgeBaseService
             {
                 // Filter to only show markdown files and directories
                 var filteredItems = items
-                    .Where(i => i.Type == "dir" || (i.Type == "file" && i.Name.EndsWith(".md", StringComparison.OrdinalIgnoreCase)))
+                    .Where(i => (i.Type == "dir" || (i.Type == "file" && i.Name.EndsWith(".md", StringComparison.OrdinalIgnoreCase))) && !IsHiddenItem(i))
                     .OrderByDescending(i => i.Type == "dir") // Folders first
                     .ThenBy(i => i.Name)
                     .ToList();
@@ -116,6 +116,12 @@ public class GitHubKnowledgeBaseService
     {
         _contentsCache.Clear();
         _fileCache.Clear();
+    }
+
+    private static bool IsHiddenItem(GitHubContentItem item)
+    {
+        // Exclude hidden/system-style entries such as .github from the browser UI.
+        return item.Name.StartsWith(".", StringComparison.Ordinal);
     }
 }
 

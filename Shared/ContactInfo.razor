@@ -18,10 +18,31 @@
     }
     else
     {
-        <div>
-            <a href="@profile.GitHubUrl" target="_blank" rel="noopener noreferrer">GitHub</a>
-            <a href="@profile.LinkedInUrl" target="_blank" rel="noopener noreferrer">LinkedIn</a>
-            <a href="@($"mailto:{profile.Email}")">Email Me: @profile.Email</a>
+        <div class="contact-links">
+            <a href="@profile.GitHubUrl" target="_blank" rel="noopener noreferrer" class="contact-link" aria-label="GitHub profile">
+                <span class="contact-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" role="img" focusable="false">
+                        <path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.58.11.79-.25.79-.56 0-.28-.01-1.2-.02-2.18-3.2.7-3.88-1.36-3.88-1.36-.52-1.34-1.28-1.69-1.28-1.69-1.05-.72.08-.71.08-.71 1.16.08 1.78 1.19 1.78 1.19 1.03 1.76 2.7 1.25 3.36.96.1-.75.4-1.25.72-1.54-2.56-.29-5.25-1.28-5.25-5.69 0-1.26.45-2.3 1.18-3.11-.12-.29-.51-1.46.11-3.04 0 0 .96-.31 3.15 1.19a10.84 10.84 0 0 1 5.74 0c2.19-1.5 3.14-1.19 3.14-1.19.63 1.58.24 2.75.12 3.04.74.81 1.18 1.85 1.18 3.11 0 4.42-2.69 5.4-5.26 5.68.41.35.77 1.04.77 2.1 0 1.52-.01 2.75-.01 3.13 0 .31.21.68.8.56A11.51 11.51 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5Z" />
+                    </svg>
+                </span>
+                <span>GitHub</span>
+            </a>
+            <a href="@profile.LinkedInUrl" target="_blank" rel="noopener noreferrer" class="contact-link" aria-label="LinkedIn profile">
+                <span class="contact-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" role="img" focusable="false">
+                        <path d="M20.45 20.45h-3.56v-5.58c0-1.33-.03-3.05-1.86-3.05-1.87 0-2.16 1.46-2.16 2.95v5.68H9.31V9h3.42v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.61 0 4.28 2.38 4.28 5.48v6.26ZM5.3 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12ZM7.08 20.45H3.52V9h3.56v11.45Z" />
+                    </svg>
+                </span>
+                <span>LinkedIn</span>
+            </a>
+            <a href="@($"mailto:{profile.Email}")" class="contact-link" aria-label="Send email">
+                <span class="contact-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" role="img" focusable="false">
+                        <path d="M3 5.5A2.5 2.5 0 0 1 5.5 3h13A2.5 2.5 0 0 1 21 5.5v13a2.5 2.5 0 0 1-2.5 2.5h-13A2.5 2.5 0 0 1 3 18.5v-13Zm2.1.5 6.9 5.37L18.9 6H5.1Zm13.9 1.26-6.39 4.97a1 1 0 0 1-1.22 0L5 7.26V18.5c0 .28.22.5.5.5h13a.5.5 0 0 0 .5-.5V7.26Z" />
+                    </svg>
+                </span>
+                <span>Email Me</span>
+            </a>
         </div>
         <div style="margin-top: 1rem;">
             <a href="@profile.ResumeUrl" download="@profile.ResumeFileName" class="btn-primary" style="font-size: 0.9rem; padding: 0.5rem 1.5rem;">Download Resume</a>
