@@ -8,7 +8,8 @@
   If the file cannot be loaded the page falls back to internal defaults.
 -->
 
-<h1>My Technical Skills</h1>
+<p class="eyebrow">The toolkit / Technical record</p>
+<h1>My Technical Skills<span class="heading-period">.</span></h1>
 <hr />
 
 <div class="skill-grid">
@@ -21,7 +22,7 @@
         @foreach (var cat in categories)
         {
             <div class="skill-card card">
-                <h3>@cat.Category</h3>
+                <h2>@cat.Category</h2>
                 <div>
                     @foreach (var item in cat.Items)
                     {

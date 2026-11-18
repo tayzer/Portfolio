@@ -15,25 +15,40 @@ else if (content == null)
 }
 else
 {
-    <div class="hero-section">
-        <img src="@content.HeroImageUrl" alt="@content.HeroImageAlt" />
-        
-        <h1>@content.HeroGreeting <span class="highlight">@content.HeroName</span></h1>
-        
-        @foreach (var paragraph in content.HeroParagraphs)
-        {
-            <p>@((MarkupString)paragraph)</p>
-        }
-        
-        <div style="margin-top: 2rem;">
-            <a href="@content.CtaHref" class="btn-primary">@content.CtaText</a>
+    <section class="hero-section" aria-labelledby="hero-title">
+        <div class="hero-copy">
+            <p class="eyebrow">Personal file № 001 / About me</p>
+            <h1 id="hero-title">@content.HeroGreeting<br /><span class="highlight">@content.HeroName.</span></h1>
+            <p class="hero-deck">Clean web applications.<br />Reliable backend systems.<br /><mark>Always something to improve.</mark></p>
+            <div class="hero-actions">
+                <a href="@content.CtaHref" class="btn-primary">@content.CtaText <span aria-hidden="true">↗</span></a>
+                <a class="text-link" href="#background">Read the personal file <span aria-hidden="true">↓</span></a>
+            </div>
         </div>
-    </div>
+        <aside class="profile-dossier" aria-label="Developer profile">
+            <div class="dossier-topline"><span>Meet the developer</span><span>TW / 001</span></div>
+            <img src="@content.HeroImageUrl" alt="@content.HeroImageAlt" width="480" height="480" />
+            <div class="dossier-caption"><strong>@content.HeroName</strong><span>Software developer<br />Curious by default.</span></div>
+            <span class="dossier-stamp" aria-hidden="true">Still building</span>
+        </aside>
+    </section>
 
-    <div class="card">
-        <h2>@content.GoalTitle</h2>
-        <p>@content.GoalText</p>
-    </div>
+    <section id="background" class="about-section" aria-labelledby="background-title">
+        <div class="section-heading"><span class="section-number" aria-hidden="true">§1</span><h2 id="background-title">The background</h2></div>
+        <div class="about-grid">
+            <div class="about-copy">
+                @foreach (var paragraph in content.HeroParagraphs)
+                {
+                    <p>@((MarkupString)paragraph)</p>
+                }
+            </div>
+            <div class="goal-note">
+                <p class="eyebrow">A note on the work</p>
+                <h3>@content.GoalTitle</h3>
+                <p>@content.GoalText</p>
+            </div>
+        </div>
+    </section>
 }
 
 @code {

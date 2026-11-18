@@ -1,16 +1,17 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en" data-theme="light">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Tay's Developer Portfolio</title>
+    <meta name="description" content="Taylor Wilcox's developer portfolio. Clean web applications, reliable backend systems, selected projects and technical notes." />
     <base href="./" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800;900&family=IBM+Plex+Mono:wght@400;500;600&family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="icon" type="image/png" href="images/tay-high-resolution-logo-transparent.png" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.5.1/github-markdown-light.min.css" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="css/app.css" />
+    <link rel="stylesheet" href="css/field-notes.css" />
     <style>
         /* Blazor error UI: hidden by default, shown when runtime adds .show */
         #blazor-error-ui { display: none; position: fixed; left: 0; right: 0; top: 0; background: #7f1d1d; color: white; padding: 0.75rem 1rem; text-align: center; z-index: 9999; font-family: Arial, Helvetica, sans-serif; }
@@ -23,20 +24,19 @@
             const root = document.documentElement;
             const applyTheme = (theme) => root.setAttribute("data-theme", theme);
 
-            const stored = localStorage.getItem(storageKey);
-            if (stored) {
+            let stored;
+            try { stored = localStorage.getItem(storageKey); } catch { /* Storage may be disabled. */ }
+            if (stored === "dark" || stored === "light") {
                 applyTheme(stored);
-            } else if (window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches) {
-                applyTheme("light");
             } else {
-                applyTheme("dark");
+                applyTheme("light");
             }
 
             window.toggleTheme = function () {
                 const current = root.getAttribute("data-theme") || "dark";
                 const next = current === "dark" ? "light" : "dark";
                 applyTheme(next);
-                localStorage.setItem(storageKey, next);
+                try { localStorage.setItem(storageKey, next); } catch { /* Theme still works without persistence. */ }
             };
         })();
     </script>
