@@ -1,13 +1,15 @@
 @inherits LayoutComponentBase
 
 <div class="main-layout">
+    <a class="skip-link" href="#main">Skip to content</a>
     <NavMenu />
 
-    <main class="content">
+    <main id="main" class="content" tabindex="-1">
         @Body
     </main>
 
     <footer class="footer">
         <ContactInfo />
+        <div class="footer-colophon"><span>Taylor Wilcox / Developer portfolio</span><span>Stay curious. Keep building.</span></div>
     </footer>
 </div>

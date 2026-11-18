@@ -15,7 +15,8 @@ else if (project == null)
 }
 else
 {
-    <h1>@project.Title</h1>
+    <p class="eyebrow"><a href="projects">← All project files</a></p>
+    <h1>@project.Title<span class="heading-period">.</span></h1>
     <img src="@project.ImageUrl" alt="@project.Title" loading="lazy" decoding="async" style="width:100%; max-width: 600px;" />
 
     <h2>Summary</h2>
